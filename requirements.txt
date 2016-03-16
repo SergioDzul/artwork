@@ -3,5 +3,6 @@ Django==1.9.4
 easy-thumbnails==2.3
 Kivy==1.9.1
 Kivy-Garden==0.1.4
+loremipsum==1.0.5
 Pillow==3.1.1
 requests==2.9.1
