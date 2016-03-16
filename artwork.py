@@ -27,7 +27,8 @@ class Artwork():
         # icon_size = (125, 70)
         background_size = (640, 453)
         laurel_size = (25, 45)
-
+        margin_laurel = 5
+        margin_bottom = 15
         dir_background = os.path.join(self.BASE_DIR, 'Artwork', 'backgrounds', background)
         dir_font = os.path.join(self.BASE_DIR, 'Artwork', 'fonts', 'ArchitectsDaughter.ttf')
         dir_laurel = os.path.join(self.BASE_DIR, 'Artwork', 'resources', 'laurel-right.png')
@@ -51,32 +52,27 @@ class Artwork():
 
         name_position = (
             (background_w-name_w)/2,
-            (background_h-name_h)-10)
+            (background_h-name_h)-margin_bottom)
         draw.text(name_position, name, fill=color_text, font=font_name)
 
         ### end name process ###
 
         ### message process ###
 
-        total_sub_strings = len(array_of_string)
+        total_sub_strings = len(array_of_string) + 1
         counter = total_sub_strings
+
+        sub_w, sub_h = draw.textsize(array_of_string[0], font=font_message)
+        message_h = (name_position[1] - (sub_h * total_sub_strings)) - sub_h
+
+
         for substring in array_of_string:
-            sub_w, sub_h = draw.textsize(substring, font=font_message)
-            # position = (
-            #     (background_w-sub_w)/2,
-            #     (name_position[1]-(sub_h*total_sub_strings)) + 5
-            # )
             position = (
                 (background_w-sub_w)/2,
                 (
-                    (
-                        background_h-(sub_h*counter)
-                    )-(
-                        (sub_h*(total_sub_strings-1))
-                    )
-                ) + 12
+                   message_h + (sub_h*counter)
+                )
             )
-            print(position)
             draw.text(position, substring, fill=color_text, font=font_message)
             counter -= 1
 
@@ -85,18 +81,18 @@ class Artwork():
         ### laurels ###
 
         laurel = Image.open(dir_laurel)
-        w, h = laurel_size
+        laurel_w, laurel_h = laurel_size
         laurel = laurel.resize(laurel_size, Image.ANTIALIAS)
         laurel = laurel.convert("RGBA")
         laurel_mirror = ImageOps.mirror(laurel)
         laurel_position = (
-            ((name_position[0]+name_w)-(w/2))+10,
-            name_position[1]-5
+            ((name_position[0]+name_w)-(laurel_w/2))+margin_bottom,
+            name_position[1]-margin_laurel
         )
 
         mirror_position = (
-            (name_position[0]-(w/2))-10,
-            name_position[1]-5
+            (name_position[0]-(laurel_w/2))-margin_bottom,
+            name_position[1]-margin_laurel
         )
 
         background.paste(laurel_mirror, mirror_position, mask=laurel_mirror)
