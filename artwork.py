@@ -1,4 +1,5 @@
 __author__ = 'sergio'
+
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import StringIO
 import textwrap
@@ -11,14 +12,38 @@ class Artwork():
     """
 
     def __init__(self):
-        self.BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self.BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
     def get_text_size(self, message):
-        default = 30
+        default = 55
         if len(message) > 195:
-            return 20
+            return 45
 
         return default
+
+    def quotes_of_message(self, message):
+        # import ipdb; ipdb.set_trace()
+        quoter_left = u'\u201c'
+        quoter_right = u'\u201d'
+        try:
+            first_char = message[0]
+            last_char = message[-1]
+        except Exception:
+            print "no string o no iterable"
+            return message
+
+        if not first_char == quoter_left and not last_char == quoter_right:
+            return quoter_left+message+quoter_right
+        elif first_char == quoter_left and not last_char == quoter_right:
+            _message = message[1:]
+            _message = _message.capitalize()
+            return quoter_left+_message+quoter_right
+        elif not first_char == quoter_left and last_char == quoter_right:
+            return quoter_left+message
+        elif first_char == quoter_left and last_char == quoter_right:
+            _message = message[1:-1]
+            _message = _message.capitalize()
+            return quoter_left+_message+quoter_right
 
     def generate_artwork(self, data):
         """
@@ -26,24 +51,26 @@ class Artwork():
         """
         background = data['background']
         message = data['message']
-        message = message.capitalize()
+        message = self.quotes_of_message(message.capitalize())
+        print(message)
         name = data['name']
         color_text = data['color_text']
 
         ### variables ###
 
         # icon_size = (125, 70)
-        background_size = (640, 453)
-        laurel_size = (25, 55)
-        margin_laurel = 5
-        margin_bottom = 15
-        name_static_h = 398
-        name_size = 25
-        message_size = self.get_text_size(message)
+        background_size = (1200, 1200)
+        laurel_size = (90, 160)
+        margin_laurel = 25
+        pre_size = self.get_text_size(message)
+        margin_bottom = pre_size - 15
+        # name_static_h = 398
+        name_size = pre_size
+        message_size = pre_size
 
-        dir_background = os.path.join(self.BASE_DIR, 'Artwork', 'backgrounds', background)
-        dir_font = os.path.join(self.BASE_DIR, 'Artwork', 'fonts', 'ArchitectsDaughter.ttf')
-        dir_laurel = os.path.join(self.BASE_DIR, 'Artwork', 'resources', 'laurel-right.png')
+        dir_background = os.path.join(self.BASE_DIR, 'backgrounds', background)
+        dir_font = os.path.join(self.BASE_DIR, 'fonts', 'ArchitectsDaughter.ttf')
+        dir_laurel = os.path.join(self.BASE_DIR, 'resources', 'laurel-right.png')
         array_of_string = textwrap.wrap(message, width=30)
         font_name = ImageFont.truetype(dir_font, size=name_size)
         font_message = ImageFont.truetype(dir_font, size=message_size)
@@ -76,7 +103,6 @@ class Artwork():
             temp_w += 2
             temp_h += 2
             not_problem = False
-
 
         message_h = ((background_h - (temp_h * (total_sub_strings)))/2) - temp_h
         message_h -= name_h
@@ -147,6 +173,6 @@ class Artwork():
         name_output = data['name_output']
         image = self.generate_artwork(data)
         name_of_file = name_output.replace(' ', '_')
-        dir_save = os.path.join(self.BASE_DIR, 'Artwork', 'outputs', name_of_file+'.png')
+        dir_save = os.path.join(self.BASE_DIR, 'outputs', name_of_file+'.png')
         image.save(dir_save)
         print(dir_save)

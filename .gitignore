@@ -1,3 +1,5 @@
 /env/**
-/outputs/**
+outputs/**
 /.idea/**
+backgrounds/**
+*.csv
